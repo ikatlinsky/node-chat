@@ -1,21 +1,27 @@
 var express = require('express');
 var routes = require('./routes');
+var partials = require('express-partials');
 var errorHandlers = require('./middleware/error_handlers');
+var logger = require('./middleware/log');
 var port = process.env.PORT || 3000;
 
 var app = express();
 
-app.use(errorHandlers.notFound);
+app.set('view engine', 'ejs');
+app.set('view options', {defaultLayout: 'layout'});
 
-app.get('*', function (req, res) {
-   res.send('Express response');
-});
+app.use(partials());
+app.use(logger.log);
+app.use(express.static(__dirname + '/static'));
 
 app.get('/', routes.index);
 app.get('/login', routes.login);
 app.post('/login', routes.loginProcess);
-app.get('/', routes.chat);
+app.get('/chat', routes.chat);
 
-app.listen(port, function () {
-    console.log("Application server running on port ${port}.");
-});
+app.use(errorHandlers.error);
+app.use(errorHandlers.notFound);
+
+app.listen(port, () =>
+    console.log(`Application server running on port ${port}.`)
+);
