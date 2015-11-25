@@ -1,5 +1,7 @@
 function index (req, res) {
-    res.render('index', {title: 'Index'});
+    res.render('index', {
+        title: 'Index'
+    });
 }
 
 function login (req, res) {
