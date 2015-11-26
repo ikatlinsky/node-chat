@@ -12,6 +12,8 @@
     "express-partials": "0.2.0",
     "cookie-parser": "1.4.0",
     "express-session": "1.12.1",
+    "body-parser": "1.14.1",
+    "csurf": "1.8.3",
     "redis": "0.10.1",
     "connect-redis": "3.0.1",
     "connect-flash": "0.1.1"
