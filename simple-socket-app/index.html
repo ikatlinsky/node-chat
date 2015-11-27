@@ -3,15 +3,51 @@
 <head>
     <title>Ping Pong</title>
     <script type="text/javascript" src="socket.io.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
 </head>
 <body>
-<script>
-    var socket = io.connect('http://localhost:4000');
+    <input type="text" id="username">
+    <button id="ping">Ping</button>
+    <div id="sent"></div>
+    <ul id="info">
+    </ul>
 
-    socket.on('ping', function(data){
-        console.log('ping');
-        socket.emit('pong');
-    });
-</script>
+    <script>
+        var socket = io.connect('http://localhost:4000');
+        var $username = $('#username'),
+                $ping = $('#ping'),
+                $info = $('#info'),
+                $sent = $('#sent'),
+                pingSent = 0;
+
+        socket.on('userJoined', function(data){
+            addInfo(data.username + ' has joined us.');
+        });
+
+        socket.on('userDisconnected', function(data){
+            addInfo(data.username + ' has left.');
+        });
+
+        socket.on('ping', function (data) {
+            addInfo(data.username + ' pinged.')
+        });
+
+        $username.on('change', function () {
+            socket.emit('join', { username: $username.val() });
+        });
+
+        $ping.on('click', function () {
+            socket.emit('ping', null, function (message) {
+                if (message == 'ack') {
+                    pingSent++;
+                    $sent.html('Pings sent: ' + pingSent);
+                }
+            });
+        });
+
+        function addInfo(message) {
+            $info.append('<li>' + message + '</li>');
+        }
+    </script>
 </body>
 </html>
