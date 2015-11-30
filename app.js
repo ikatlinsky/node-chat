@@ -11,6 +11,7 @@ var RedisStore = require('connect-redis')(session);
 var logger = require('./middleware/log');
 var flash = require('connect-flash');
 var config = require('./config');
+var io = require('./socket');
 
 var port = process.env.PORT || config.port;
 var app = express();
@@ -26,7 +27,7 @@ app.use(session({
         secret: config.secret,
         saveUninitialized: true,
         resave: true,
-        store: new RedisStore({url: config.redisUrl})
+        store: new RedisStore({host: config.redisHost, port: config.redisPort})
     })
 );
 
@@ -48,6 +49,8 @@ app.get(config.routes.logout, routes.logout);
 app.use(errorHandlers.error);
 app.use(errorHandlers.notFound);
 
-app.listen(port, () =>
+var server = app.listen(port, () =>
     console.log(`Application server running on port ${port}.`)
 );
+
+io.startIo(server);
